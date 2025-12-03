@@ -15,9 +15,9 @@ for line in lines:
     for i in range(id1, id2+1):
         id = str(i)
         for j in range(1, len(id)//2+1):
-            if len(id) % j != 0:
-                continue
             if id[0] != id[j]:
+                continue
+            if len(id) % j != 0:
                 continue
             if id == (id[:j] * (len(id)//j)):
                 ans += i
