@@ -4,9 +4,6 @@ filename = "example1.txt"
 # filename = "example2.txt"
 filename = "input.txt"
 
-PAIRS = 10
-PAIRS = 1000
-
 lines = None
 with open(filename, "r") as f:
     lines = f.readlines()
@@ -14,7 +11,6 @@ with open(filename, "r") as f:
 ans = 0
 
 vec = tuple[int, ...]
-
 
 boxes: list[vec] = list()
 for line in lines:
@@ -35,33 +31,23 @@ distances.sort()
 
 # Join boxes together into circuits
 circuits: list[set[vec]] = list()
-for distance in distances[:PAIRS]:
+for distance in distances:
     box1, box2 = distance_map[distance]
-    for circuit in circuits:
-        if box1 in circuit and box2 in circuit:
-            break
-        elif box1 in circuit or box2 in circuit:
-            circuit.add(box1)
-            circuit.add(box2)
-            break
-    else:
-        circuits.append(set([box1, box2]))
-
-
-# Merge circuits into mutually exclusive circuits
-for box in boxes:
     need_merge = list()
     for circuit in circuits:
-        if box in circuit:
+        if box1 in circuit or box2 in circuit:
             need_merge.append(circuit)
-    if len(need_merge) > 1:
+    if not need_merge:
+        circuits.append(set([box1, box2]))
+    elif len(need_merge) == 1:
+        need_merge[0].add(box1)
+        need_merge[0].add(box2)
+    elif len(need_merge) > 1:
         new_circuit: set[vec] = set()
         for circuit in need_merge:
             new_circuit = new_circuit.union(circuit)
             circuits.remove(circuit)
         circuits.append(new_circuit)
-
-
-circuits.sort(key=len, reverse=True)
-
-print(len(circuits[0]) * len(circuits[1]) * len(circuits[2]))
+    if len(circuits) == 1 and len(circuits[0]) == len(boxes):
+        print(box1[0] * box2[0])
+        break
